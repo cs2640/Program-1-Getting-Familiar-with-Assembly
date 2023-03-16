@@ -1,29 +1,45 @@
-.data
-string:.asciiz "this is a string.\n"
-location:.asciiz "the memory location for this string is: "
+.data               #data section 
+	str: .asciiz "Please enter two int values:\n"  
+	number: .asciiz "\nThe two int values are: "
+	corr: .asciiz " and "
 
-.text 
-main:
-	#printing the string
-	li $v0, 4
-	la $a0, string
+ 
+.text                 #code section 
+main: 
+	#print the "Please enter two int values: "
+	li $v0, 4                
+	la $a0, str              
+	syscall  
+       	
+       	#let user enter first int 
+       	li $v0, 5 
 	syscall 
 	
-	#print memory location
+	#store it to $s0
+	move $s0, $v0
 	
-	li $v0, 4
-	la $a0, location
+	#let user enter second int 
+	li $v0, 5 
 	syscall 
 	
-	#print the memory location and the number
-	la $t0, string
-	li $v0, 1
-	move $a0, $t0
-	syscall 
+	#store it to $s1
+	move $s1, $v0
 	
-	#writing an integer 32 to memory
-	li $t1, 32
-	sw $t1, 128($t0)
+	#print the store $s0 int
+	li $v0, 4                 
+	la $a0, number              
+	syscall  
 	
-	li $v0, 10
-	syscall 
+	li $v0, 1                
+	move $a0, $s0              
+	syscall  
+	
+	#print "and"
+	li $v0, 4                 
+	la $a0, corr             
+	syscall  
+	
+	#print the store $s1 int
+	li $v0, 1                
+	move $a0, $s1              
+	syscall  
