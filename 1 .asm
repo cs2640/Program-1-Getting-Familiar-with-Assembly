@@ -7,7 +7,8 @@
 #-store two int in $s0 and $s1, respectively
 #display two int to user
 
-##Task 2 Objectives: Using values stored in $s0 and $s1
+##Task 2 Objectives: 
+#-Using values stored in $s0 and $s1 from Task 1
 # -add two values
 # -subtract two values
 # -multiply two values
