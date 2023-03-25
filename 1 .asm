@@ -15,6 +15,11 @@
 # -divide two values
 # -output the results
 
+#Task 3 Objectives: 
+#-Using values stored in $s0 and $s1 from Task 1
+# -compare two values
+# -output the results based on compare
+
 
 .data               
 #task1 data section 
@@ -30,7 +35,8 @@
 	divide: .asciiz "\nDivision: "
 
 #task3 data section
-
+    same: .asciiz "\nInputs are the same"
+    different: .asciiz "\nInputs are different"
 
 .text                  
 main: 
@@ -125,6 +131,20 @@ main:
 	syscall
 
 #task3 code section
+    #branch to "equal" if equal
+	beq $s0, $s1, equal
+	
+	#print "different" if not equal
+	li $v0, 4
+	la $a0, different
+	j end_compare
+equal:
+	#print "same" if equal
+	li $v0, 4
+	la $a0, same
+end_compare:
+	syscall
+    
 
 
 exit:#finish the code section
