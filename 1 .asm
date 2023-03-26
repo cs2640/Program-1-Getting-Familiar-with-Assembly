@@ -150,4 +150,3 @@ end_compare:
 exit:#finish the code section
 	li $v0, 10
 	syscall
-
