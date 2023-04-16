@@ -1,4 +1,5 @@
 # CS 2640.01
+# Team: Chenrui Zhang, Aaron lo,Brian Zeng
 # April 16, 2023
 # Objective: Program 2 Task 2 Advanced Math: X to the power of Y
 # - main label
