@@ -22,7 +22,7 @@ main:
     li $v0, 5
     syscall
     #store x in $t0
-    move $t0, $a0
+    move $t0, $v0
 	
     #Print prompt for user to enter y
     li $v0, 4
@@ -33,7 +33,7 @@ main:
     li $v0, 5
     syscall
     #store y in $t1
-    move $t1, $a0
+    move $t1, $v0
     
     #initialize counter
     li $t2, 1
