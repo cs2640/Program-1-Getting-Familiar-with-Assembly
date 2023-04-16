@@ -53,7 +53,7 @@ loop:
     
     #print
     li $v0, 4
-    la %a0, result
+    la $a0, result
     syscall
     
     li $v0, 1
