@@ -1,50 +1,49 @@
-#Name: CS 2640.01
-#Team:Chenrui Zhang, Aaron lo,Brian Zeng
-#Last Version:4/6/2023
-
-
-#Task 1 Objectives:
-#print out user menu
-#print a main label, a looping label, and an exit label
-#handing invalid input
+# Name: CS 2640.01
+# Team: Chenrui Zhang, Aaron lo,Brian Zeng
+# Last Version: 4/6/2023
+# Task 1 Objectives:
+# - print out user menu
+# - print a main label, a looping label, and an exit label
+# - handing invalid input
 
 .data
+#user menu text
 menu: .asciiz "\n\n~~~~~~~~~~~~~~~MAIN MENU~~~~~~~~~~~~~~~\n(1) Get letter grade\n(2)Exit Program\n\nEnter '1' or '2' for your selection: "
 breakline: .asciiz "\n--------------------------------------\n"
 askinputNumber: .asciiz "\nPlease enter a score as an interger value: "
 printgrade:.asciiz "The grade is: "
+printNewScoreSelection:.asciiz "Would you like to enter a new score?\n(Y)Yes   (N)No\nEnter 'Y' or 'N' for your selection: "
+invalidInput:.asciiz "invalid Input, please enter a numbr between 1 and 2: \n"
+printexit:.asciiz "The program will now exit.\n"
+invalidgrade1:.asciiz "invalid Input, please enter a numbr between 1 to 100: \n"
+
 #grade option for user display"
 A: .asciiz "A\n"
 B: .asciiz "B\n"
 C: .asciiz "C\n"
 D: .asciiz "D\n"
 F: .asciiz "F\n"
-printNewScoreSelection:.asciiz "Would you like to enter a new score?\n(Y)Yes   (N)No\nEnter 'Y' or 'N' for your selection: "
-invalidInput:.asciiz "invalid Input, please enter a numbr between 1 and 2: \n"
-printexit:.asciiz "The program will now exit.\n"
-invalidgrade1:.asciiz "invalid Input, please enter a numbr between 1 to 100: \n"
 
 .text
 main:
-#display the menu user
+	#display the menu user
 	li $v0, 4
 	la $a0, menu
 	syscall
 
-#let user enter '1' or '2' for your selection 
+	#let user enter '1' or '2' for your selection 
        	li $v0, 5 
 	syscall 
 	move $t0, $v0	#stores user input into register $t0
-#if 2 exit	
+
+	#if 2 exit
 	beq $v0, 2, exit
-#branch to check if user input is less than 1 or greater than 2
+	#branch to check if user input is less than 1 or greater than 
+	#handles invalid input
 	blt $t0, 1, invalid
 	bgt $t0, 2, invalid
 	
-	
-	
 loop:	
-
 	#breakline
 	li $v0, 4
 	la $a0, breakline
@@ -69,8 +68,7 @@ loop:
         j f
         
 a:	
-
-	# Print the prompt
+	#Print the prompt
  	li $v0, 4
         la $a0, printgrade
         syscall
@@ -87,18 +85,16 @@ a:
 	la $a0, printNewScoreSelection
 	syscall
 	
-	# Get the Y or N from user
+	#Get the Y or N from user
         li $v0, 12
         syscall
         move $t2, $v0
 	#if Y go to loop if N go to main
 	beq $t2, 89, loop
 	beq $t2, 78, main
-
         
 b:	
-
-	# Print the prompt
+	#Print the prompt
  	li $v0, 4
         la $a0, printgrade
         syscall
@@ -115,7 +111,7 @@ b:
 	la $a0, printNewScoreSelection
 	syscall
 	
-	# Get the Y or N from user
+	#Get the Y or N from user
         li $v0, 12
         syscall
         move $t2, $v0
@@ -123,10 +119,8 @@ b:
 	beq $t2, 89, loop
 	beq $t2, 78, main
 	
-	
 c:	
-
-	# Print the prompt
+	#Print the prompt
  	li $v0, 4
         la $a0, printgrade
         syscall
@@ -143,7 +137,7 @@ c:
 	la $a0, printNewScoreSelection
 	syscall
 	
-	# Get the Y or N from user
+	#Get the Y or N from user
         li $v0, 12
         syscall
         move $t2, $v0
@@ -151,10 +145,8 @@ c:
 	beq $t2, 89, loop
 	beq $t2, 78, main
 	
-	
 d:
-
-	# Print the prompt
+	#Print the prompt
  	li $v0, 4
         la $a0, printgrade
         syscall
@@ -171,7 +163,7 @@ d:
 	la $a0, printNewScoreSelection
 	syscall
 	
-	# Get the Y or N from user
+	#Get the Y or N from user
         li $v0, 12
         syscall
         move $t2, $v0
@@ -179,9 +171,7 @@ d:
 	beq $t2, 89, loop
 	beq $t2, 78, main
 	
-	
 f:
-
 	# Print the prompt
  	li $v0, 4
         la $a0, printgrade
@@ -199,7 +189,7 @@ f:
 	la $a0, printNewScoreSelection
 	syscall
 	
-	# Get the Y or N from user
+	#Get the Y or N from user
         li $v0, 12
         syscall
         move $t2, $v0
@@ -214,8 +204,7 @@ invalidgrade:
 	syscall
 	
 	j loop
-	#reprompt the user for valid input
-	
+	#reprompt the user for valid input	
 
 invalid:
 	#print out invalid input (less than 1 grader than 2) 
@@ -225,8 +214,6 @@ invalid:
 	
 	j main
 	#reprompt the user for valid input
-	
-	
 	
 exit: 
 	# Print the exit sentence
