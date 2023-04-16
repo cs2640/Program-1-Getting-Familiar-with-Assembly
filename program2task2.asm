@@ -35,30 +35,30 @@ main:
 	#store y in $t1
 	move $t1, $a0
     
-    	#initialize counter
-    	li $t2, 1
+    #initialize counter
+    li $t2, 1
 	
 loop:
 	#Add looping functionality here
 	#loop repeats mult and exits
     
-    	#mult x by itself y times
-    	mul $t0, $t0, $t0
+    #mult x by itself y times
+    mul $t0, $t0, $t0
     
-    	#increment ctr
-    	addi $t2, $t2, 1
+    #increment ctr
+    addi $t2, $t2, 1
     
-    	#comp ctr with y 
-    	ble $t2, $t1, loop
+    #comp ctr with y 
+    ble $t2, $t1, loop
     
-    	#print
-    	li $v0, 4
-    	la %a0, result
-    	syscall
+    #print
+    li $v0, 4
+    la %a0, result
+    syscall
     
-    	li $v0, 1
-    	move $a0, $t0
-    	syscall
+    li $v0, 1
+    move $a0, $t0
+    syscall
 
 exit:
 	li $v0, 10
