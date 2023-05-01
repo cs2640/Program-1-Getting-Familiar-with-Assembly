@@ -4,9 +4,13 @@
 
 
 #Task 3 Objectives:
+#take the file name
+#clean the 0x0a
 #takes practiceFile.txt file and appends to it
 #-Store the file descriptor in $s0
 #-Write user input to the file
+
+
 
 .data
 fileName: .space 128
