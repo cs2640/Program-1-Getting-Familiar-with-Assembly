@@ -1,3 +1,9 @@
+#CS2640.01
+#Brian Zeng
+#Due: May 7, 2023
+#Task Objective:
+# - Print scores
+# - Print ec with 101
 .data
 scores: .word 32, 56, 78, 66, 88, 90, 93, 100, 101, 82 
 f: .asciiz "F"
@@ -63,5 +69,7 @@ print_grade:
   la $a0, name
   li $v0, 4 
   syscall
+exit:
   li $v0, 10 
   syscall
+  j exit
