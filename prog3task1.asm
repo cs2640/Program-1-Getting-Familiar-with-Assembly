@@ -1,5 +1,5 @@
 #CS2640.01
-#Brian Zeng
+#Aaron Lo, Brian Zeng, Chenrui Zhang
 #Due: May 7, 2023
 #Task Objective:
 # - Print scores
