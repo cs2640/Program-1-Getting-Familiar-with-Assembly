@@ -151,9 +151,6 @@ takeInputMessage:
     			# If we reach the end, jump to the getBack function
     			beqz $t0, getBack
 
-   			# Increment our character counter by 1 if we're not at the end
-    			add $s0, $s0, 1
-
     			# Check if the character is between 'a' and 'z'
     			blt $t0, 'a', incrementMessagePointer
     			bgt $t0, 'z', incrementMessagePointer
