@@ -103,7 +103,7 @@ encryption:
 	 
 	jal displayEncryptedMessage
 	 
-	j main
+	jal main
 
 decryption:
 	 
@@ -119,7 +119,7 @@ decryption:
 	
 	jal displayDecryptedMessage
 	
-	j main
+	jal main
 	
 	
 ##############################################################################		
