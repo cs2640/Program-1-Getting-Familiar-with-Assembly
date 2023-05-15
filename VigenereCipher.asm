@@ -1,6 +1,6 @@
 #Name: Chenrui Zhang, Aaron Lo, Brain Zhen
 #Class: CS 2640.01 
-#Date: May 7, 2023
+#Date: May 14, 2023
 
 ##############################################################################		
 #There is one welcome menu, one encrypt menu and decrypt menu.
@@ -16,13 +16,14 @@
 welcomePrompt: .asciiz "welcome to Vigenere Cipher, Yes to encryption No to decryption"
 encryptionPrompt:.asciiz "This is encrypt, get ready for the key and message"
 decryptionPrompt:.asciiz "This is decrypt, get ready for the key and message"
-keyPrompt: .asciiz "Please enter your key "
+keyEnteredPrompt: .asciiz "Please enter your key "
 messageEnteredPrompt: .asciiz "Please enter the message: "
 encryptedFinished: .asciiz "Encrypted complete, click to get your new message "
 decryptedFinished: .asciiz "decrypted complete, click to get your new message "
 
 alphabetTable: .word 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
-key: .space 10000
+#four buffers
+keyEntered: .space 10000
 messageEntered: .space 10000
 newKey: .space 10000
 newMessage: .space 10000
@@ -34,7 +35,8 @@ newMessage: .space 10000
 #Use branch to create the label for the different menu.
 #In encryption we still have three option and one can jump to decrypt menu. 
 #In decryption we still have three option and one can jump to encrypt menu. 
-
+#
+#
 
 .text
 main:	
@@ -85,7 +87,7 @@ decryptionMenu:
 	beq $a0, 2, exit
 		
 ##############################################################################		
-#  take two input, message and key
+#  take two input, message and keyEntered
 #And change it to uppercase to fit in the Vigenère table
 #and change the string to Array
 #the last step is use the array to use calculate new message 
@@ -97,7 +99,7 @@ encryption:
 	 
 	jal messageToArray
 	 
-	jal keyToArray	
+	jal keyEnteredToArray	
 	 
 	jal encryptText	
 	 
@@ -113,7 +115,7 @@ decryption:
 	 
 	jal messageToArray
 	 
-	jal keyToArray
+	jal keyEnteredToArray
 	 
 	jal outputDecrypt
 	
@@ -138,12 +140,8 @@ takeInputMessage:
     	li $v0, 54
     	syscall
 		
-	j upperCaseMessage
-	
-	upperCaseMessage:
-   		# Initialize the loop counter
+		#start change to uppercase
     		li $t1, 0
-
 		messageLoop:
     			# Load the first character into register t0
     			lb $t0, messageEntered($t1)
@@ -168,24 +166,19 @@ takeInputMessage:
     			j messageLoop
 		
 takeInputKey:
-	# Ask the user input a key and save 
-	la $a0, keyPrompt
-	la $a1, key
+	# Ask the user input a keyEntered and save 
+	la $a0, keyEnteredPrompt
+	la $a1, keyEntered
 	la $a2, 10000
 	#InputDialogString
 	li $v0, 54
 	syscall
-		
-	# Jump to where we were in either the encryption or decryption functions.
-	j upperCaseKey
-		
-	upperCaseKey:
-		# Initialize the loop counter
+	
+		#start change to upper case
     		li $t1, 0
-
-		keyLoop:
+		keyEnteredLoop:
     			# Load the first character into register t0
-   			lb $t0, key($t1)
+   			lb $t0, keyEntered($t1)
 
     			# If we reach the end, jump to the getBack function
     			beqz $t0, getBack
@@ -197,15 +190,15 @@ takeInputKey:
     			# If it's a lowercase letter, subtract 32 from the t0 register to make it capital
     			sub $t0, $t0, 32
 
-   			# Save the change to the character to the key variable
-    			sb $t0, key($t1)
+   			# Save the change to the character to the keyEntered variable
+    			sb $t0, keyEntered($t1)
 
 		incrementKeyPointer:
     			# Increment the pointer
     			add $t1, $t1, 1
 
     			# Jump back to the start of the loop
-    			j keyLoop
+    			j keyEnteredLoop
 
 		
 ##############################################################################		
@@ -302,12 +295,12 @@ messageToArray:
 ##############################################################################		
 #this function use the same appraoch as messageToArray
  
-# The keyToArray function converts the key characters into indices of the alphabetTable.
-keyToArray:
-	# Retrieve characters from the key and alphabetTable.
-	lb $t0, key($t1)
+# The keyEnteredToArray function converts the keyEntered characters into indices of the alphabetTable.
+keyEnteredToArray:
+	# Retrieve characters from the keyEntered and alphabetTable.
+	lb $t0, keyEntered($t1)
 
-	# If we reach the end of the key string, jump to endConversion1.
+	# If we reach the end of the keyEntered string, jump to endConversion1.
 	beqz $t0, endConversion1
 
 	# Branch to different handlers based on the type of character (capital or special).
@@ -315,14 +308,14 @@ keyToArray:
 	bgt $t0, 'Z', handleSpecialKey
 	j handleCapitalKey
 
-# Handle special characters and newline characters in the key.
+# Handle special characters and newline characters in the keyEntered.
 	handleSpecialKey:
 		# If the character is a newline, jump to changeNewline1.
 		beq $t0, '\n', changeNewline1
 		# For other non-capital letter characters, jump to noConversion1.
 		j noConversion1
 
-		# Handle capital letter characters in the key.
+		# Handle capital letter characters in the keyEntered.
 	handleCapitalKey:
 		# Initialize the alphabetTable loop counter.
 		li $t3, 0
@@ -332,7 +325,7 @@ keyToArray:
 			# Load a character from the alphabetTable.
 			lb $t2, alphabetTable($t3)
 
-			# If the characters in the key and alphabetTable match, jump to storeToVariable1.
+			# If the characters in the keyEntered and alphabetTable match, jump to storeToVariable1.
 			beq $t0, $t2, storeToVariable1
 
 			# Move to the next character in the alphabetTable.
@@ -351,11 +344,11 @@ keyToArray:
 
 	# Handle characters without conversion.
 	noConversion1:
-		# Copy the current key character to the newKey variable without conversion.
+		# Copy the current keyEntered character to the newKey variable without conversion.
 		move $t4, $t0
 		j saveCharacterAndIncrement1
 
-	# Store the index of the key's letter in the alphabetTable array.
+	# Store the index of the keyEntered's letter in the alphabetTable array.
 	storeToVariable1:
 		# Calculate the index and store it in t4.
 		div $t4, $t3, 4
@@ -365,14 +358,14 @@ keyToArray:
 		# Save the changes made to the newKey variable.
 		sb $t4, newKey($t5)
 
-		# Increment the addresses of key and newKey by 1.
+		# Increment the addresses of keyEntered and newKey by 1.
 		add $t1, $t1, 1
 		add $t5, $t5, 1
 
-		# Loop back to the beginning of keyToArray for the next iteration.
-		j keyToArray
+		# Loop back to the beginning of keyEnteredToArray for the next iteration.
+		j keyEnteredToArray
 
-	# Handle the end of the key string.
+	# Handle the end of the keyEntered string.
 	endConversion1:
 		# Set t9 to 26 (representing the end of a string).
 		li $t6, 26
@@ -387,8 +380,8 @@ keyToArray:
     		j getBack
 
 #########################################################################	
-# this function reading characters from two input arrays, one for the newMessage and one for the key named newKey
-# During the encryption process, the code iterates through both the message and the key arrays, 
+# this function reading characters from two input arrays, one for the newMessage and one for the keyEntered named newKey
+# During the encryption process, the code iterates through both the message and the keyEntered arrays, 
 #fetching the characters one by one, performing calculations, and then updating the newMessage array with the encrypted characters.
 #
 #The core algorithm
@@ -403,14 +396,14 @@ encryptText:
     	bgt $t0, 25, handleUniqueSymbol   # If character is greater than 25, jump to handleUniqueSymbol
     	bltz $t0, handleUniqueSymbol   # If character is less than 0, jump to handleUniqueSymbol
     
-    	lb $t2, newKey($t3)         # Load a character from the key
-    	beq $t2, 26, finishKeyArray # If character is 26, end of key, jump to finishKeyArray
+    	lb $t2, newKey($t3)         # Load a character from the keyEntered
+    	beq $t2, 26, finishKeyArray # If character is 26, end of keyEntered, jump to finishKeyArray
     	bgt $t2, 25, handleUniqueSymbol1  # If character is greater than 25, jump to handleUniqueSymbol1
     	bltz $t2, handleUniqueSymbol1  # If character is less than 0, jump to handleUniqueSymbol1
 		
 		
 		
-	# Add the character values from the message and the key
+	# Add the character values from the message and the keyEntered
 	add $t0, $t0, $t2
 
 	# If the sum is greater than 25, jump to morethan25
@@ -444,7 +437,7 @@ encryptText:
 		# Increment the message index
 		add $t1, $t1, 1
 
-		# Increment the key index
+		# Increment the keyEntered index
 		add $t3, $t3, 1
 
 		# Jump back to the beginning of encryptText
@@ -485,7 +478,7 @@ encryptText:
 		# Jump back to the beginning of encryptText
 		j encryptText
 
-	# Increment the key index
+	# Increment the keyEntered index
 	handleUniqueSymbol1:
 		add $t3, $t3, 1
 		# Jump back to the beginning of encryptText
@@ -506,12 +499,12 @@ decryptText:
 	bgt $t0, 26, handleUniqueSymbol2   # If character is greater than 26, jump to handleUniqueSymbol2
 	bltz $t0, handleUniqueSymbol2   # If character is less than 0, jump to handleUniqueSymbol2
 
-	lb $t2, newKey($t3)         # Load a character from the key
-	beq $t2, 26, finishKeyArray2 # If character is 26, end of key, jump to finishKeyArray2
+	lb $t2, newKey($t3)         # Load a character from the keyEntered
+	beq $t2, 26, finishKeyArray2 # If character is 26, end of keyEntered, jump to finishKeyArray2
 	bgt $t2, 26, handleUniqueSymbol12  # If character is greater than 26, jump to handleUniqueSymbol12
 	bltz $t2, handleUniqueSymbol12  # If character is less than 0, jump to handleUniqueSymbol12
 
-	# sub the character values from the message and the key
+	# sub the character values from the message and the keyEntered
 	sub $t0, $t0, $t2 
 	
 	# If the sum is less than 1, jump to morethan25
@@ -537,7 +530,7 @@ decryptText:
 			# Save the changes we made to the decryptedCipher variable
 			sb $t0, newMessage($t1)
 
-			# Increment the addresses of the encrypted message and the key by 1
+			# Increment the addresses of the encrypted message and the keyEntered by 1
 			add $t1, $t1, 1
 			add $t3, $t3, 1
 
@@ -570,7 +563,7 @@ decryptText:
 		j decryptText
 
 	handleUniqueSymbol12:
-		# Increment the address of the key by 1
+		# Increment the address of the keyEntered by 1
 		add $t3, $t3, 1
 		# Jump back to the beginning of decryptText
 		j decryptText
@@ -587,7 +580,7 @@ decryptText:
 		j decryptText
 
 	finishKeyArray2:
-		# Clear register t3 to start the key back over from the beginning
+		# Clear register t3 to start the keyEntered back over from the beginning
 		move $t3, $zero
 		# Jump back to the beginning of decryptText
 		j decryptText
@@ -644,6 +637,10 @@ displayEncryptedMessage:
     	# Return to where we were in the encryption function
     	jr $ra
 	
+		
+	
+	
+
 		
 	
 	
