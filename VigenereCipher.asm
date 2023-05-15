@@ -1,15 +1,15 @@
-#Name: Chenrui Zhang, Aaron Lo, Brain Zhen
+#Name: Chenrui Zhang, Aaron Lo, Brian Zeng
 #Class: CS 2640.01 
 #Date: May 14, 2023
 
 ##############################################################################		
-#There is one welcome menu, one encrypt menu and decrypt menu.
-#And two prompts to tell the user encrypt or decrypt finished.
+#There is one prompt for the welcome menu, encryption menu, and decryption menu.
+#And two prompts to tell the user when the encrypt or decrypt is finished.
 #
-#several buffer to store variable
-#the most important things is the alphabet table
-#this will help us do the output through the index
-#
+#Four buffers are needed to store variables
+#The most important variable in .data is the alphabet table
+# - the alphabet stores all capitalized letters in an array
+# - this will help us calculate the output using the index
 #
 
 .data
@@ -29,13 +29,11 @@ newKey: .space 10000
 newMessage: .space 10000
 		
 ##############################################################################		
-#
-#syscall 50, This syscall number will create a  confirmDialog
-#This syscall will give 3 options. These three options are yes, no and cancel respectively.
+#Syscall 50: This syscall number will create a confirmDialog
+#This syscall will give 3 options. These three options are: yes, no and cancel respectively.
 #Use branch to create the label for the different menu.
 #In encryption we still have three option and one can jump to decrypt menu. 
-#In decryption we still have three option and one can jump to encrypt menu. 
-#
+#In decryption we still have three option and one can jump to encrypt menu.
 #
 
 .text
@@ -46,51 +44,51 @@ main:
 	li $v0, 50
 	syscall
 	
-	##show the menu 
-	#yes to decryption, 
+	#display the menu 
+	#yes for encryption
 	beq $a0, 0, encryptionMenu
-	#no to decryption
+	#no for decryption
 	beq $a0, 1, decryptionMenu
 	#cancel to exit
 	beq $a0, 2, exit	
 		
 encryptionMenu:
 
-	# show the encrypt Prompt
+	#print the encryption prompt
 	la $a0, encryptionPrompt
 	la $a1, 1
 	li $v0, 50
 	syscall
 		
-	#show the menu 
-	#yes to decryption, 
+	#print the menu 
+	#yes for encryption 
 	beq $a0, 0, encryption
-	#No to back to encryption, 
+	#no to return to decryption 
 	beq $a0, 1, decryptionMenu
 	#cancel to exit
 	beq $a0, 2, exit
 		
 		
 decryptionMenu:
-	# show the decrypt Prompt
-	la $a0,decryptionPrompt
+	#print the decryption Prompt
+	la $a0, decryptionPrompt
 	la $a1, 1
 	li $v0, 50
 	syscall
 		
 	#show the menu 
-	#yes to decryption,
+	#yes for decryption
 	beq $a0, 0, decryption
-	#No to back to encryption,
+	#No to return to encryption
 	beq $a0, 1, encryptionMenu
 	#cancel to exit
 	beq $a0, 2, exit
 		
 ##############################################################################		
-#  take two input, message and keyEntered
-#And change it to uppercase to fit in the Vigenère table
-#and change the string to Array
-#the last step is use the array to use calculate new message 
+# Take two inputs : message and keyEntered
+# Change them to uppercase to fit in the Vigenère table
+# Change the string to an array
+# Use the array to use calculate the new (encrypted) message 
 encryption:
 	
 	jal takeInputMessage
@@ -126,11 +124,11 @@ decryption:
 	
 ##############################################################################		
 # takeInputMessage function prompts the user for input, reads it, and stores it in the 'messageEntered' variable. 
-# use messageEnteredToUpper  iterates through the input message (messageEntered) and checks if a character is a lowercase letter (between 'a' and 'z')
-#If it is, the function converts the lowercase letter to its uppercase equivalent and saves the change back to the messageEntered variable. 
-#This process continues for each character in the input message until the end of the string is reached.
+# messageEnteredToUpper iterates through the input message (messageEntered) and checks if a character is a lowercase letter (between 'a' and 'z')
+# If it is lowercase, the function converts the lowercase letter to its uppercase equivalent and saves the change back to the messageEntered variable. 
+# This process continues for each character in the input message until the end of the string is reached.
 #
-#takeInputKey use similar approach with takeInputMessage
+# takeInputKey uses a similar approach with takeInputMessage
 takeInputMessage:
 	# Prompt user for input, read it, and store it in 'messageEntered'
 	la $a0, messageEnteredPrompt
@@ -202,19 +200,18 @@ takeInputKey:
 
 		
 ##############################################################################		
-#  takes an input string (messageEntered) and converts it into a new array (newMessage) 
-#If the character is an uppercase letter (A-Z), it replaces the letter with its index in the alphabetTable array.
-#If the character is a newline ('\n'), it replaces the newline with the number 28.
-#For any other characters, they are moved to the newMessage array without any conversion.
-#The code processes the input string one character at a time, jumping to different sections (labels) based on the character type. 
-#After processing each character, it saves the result to the newMessage array, increments the array indices, and moves on to the next character until the end of the input string is reached.
-# it appends the number 26 to the end of the newMessage array to indicate the end of the output and jumps to the getBack function.
+# Takes an input string (messageEntered) and converts it into a new array (newMessage) 
+# If the character is an uppercase letter (A-Z), it replaces the letter with its index in the alphabetTable array.
+# If the character is a newline ('\n'), it replaces the newline with the number 28.
+# For any other characters, they are moved to the newMessage array without any conversion.
+# The code processes the input string one character at a time, jumping to different sections (labels) based on the character type. 
+# After processing each character, it saves the result to the newMessage array, increments the array indices, and moves on to the next character until the end of the input string is reached.
+# It appends the number 26 to the end of the newMessage array to indicate the end of the output and jumps to the getBack function.
 #
-#if I enter ABC 
-#I will get 0, 1, 2, 26 for the array
+# EX: 
+# If I enter ABC 
+# I will get 0, 1, 2, 26 for the array
 #
-#
-
 
 messageToArray:
 	# Load in the characters for the messageEntered and alphabetTable variables respectively.
@@ -293,7 +290,7 @@ messageToArray:
     		j getBack
 		
 ##############################################################################		
-#this function use the same appraoch as messageToArray
+# This function uses the same appraoch as messageToArray but converts the key
  
 # The keyEnteredToArray function converts the keyEntered characters into indices of the alphabetTable.
 keyEnteredToArray:
@@ -380,14 +377,13 @@ keyEnteredToArray:
     		j getBack
 
 #########################################################################	
-# this function reading characters from two input arrays, one for the newMessage and one for the keyEntered named newKey
+# This function reads characters from the two input arrays: one for the newMessage and one for the keyEntered named newKey
 # During the encryption process, the code iterates through both the message and the keyEntered arrays, 
-#fetching the characters one by one, performing calculations, and then updating the newMessage array with the encrypted characters.
+# fetching the characters one by one, performing calculations, and then updating the newMessage array with the encrypted characters.
 #
-#The core algorithm
-#Ei = (Pi + Ki) mod 26
+# The Core Algorithm:
+# Ei = (Pi + Ki) mod 26
 #		
-
 												
 encryptText:
 	lb $t0, newMessage($t1)    # Load a num from the array
@@ -485,11 +481,11 @@ encryptText:
 		j encryptText
 		
 ###########################################################################		
-# The only diffence is this function has a temporary register to save all output
+# The only difference is that this function has a temporary register to save all output
 #
 #
-#The core algorithm
-#Di = (Ei - Ki + 26) mod 26
+# The Core Algorithm
+# Di = (Ei - Ki + 26) mod 26
 #
 #			
 decryptText:
@@ -586,9 +582,9 @@ decryptText:
 		j decryptText
 		
 #####################################################################################		
-#two helper function
-#the first one can get back to where it break
-#the second one can exit the program
+# Two helper functions
+# The first one can get back to where it breaks
+# The second one exits the program
 getBack:
 		#move all register to 0
 		move $t0, $zero
@@ -607,7 +603,7 @@ exit:
 	
 
 #####################################################################################
-#print the mips dialogo box and output the message
+# Print the mips dialog box and output the message
 
 displayEncryptedMessage:
 	# Inform the user that the encryption was completed.
