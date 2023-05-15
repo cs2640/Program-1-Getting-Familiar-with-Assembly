@@ -3,14 +3,15 @@
 #Date: May 7, 2023
 
 ##############################################################################		
+#There is one welcome menu, one encrypt menu and decrypt menu.
+#And two prompts to tell the user encrypt or decrypt finished.
+#
+#several buffer to store variable
+#the most important things is the alphabet table
+#this will help us do the output through the index
 #
 #
-#
-#
-#
-#
-#
-#
+
 .data
 welcomePrompt: .asciiz "welcome to Vigenere Cipher, Yes to encryption No to decryption"
 encryptionPrompt:.asciiz "This is encrypt, get ready for the key and message"
@@ -28,13 +29,12 @@ newMessage: .space 10000
 		
 ##############################################################################		
 #
-#
-#
-#
-#
-#
-#
-#
+#syscall 50, This syscall number will create a  confirmDialog
+#This syscall will give 3 options. These three options are yes, no and cancel respectively.
+#Use branch to create the label for the different menu.
+#In encryption we still have three option and one can jump to decrypt menu. 
+#In decryption we still have three option and one can jump to encrypt menu. 
+
 
 .text
 main:	
